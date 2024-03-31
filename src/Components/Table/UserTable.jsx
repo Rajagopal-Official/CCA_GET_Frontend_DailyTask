@@ -6,22 +6,29 @@ import { IconButton, Modal, TextField } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { Button } from "@mui/material";
 import { Box } from "@mui/material";
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 const App = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);//State for populating the users
   const [editModalOpen, setEditModalOpen] = useState(false); //state for modal close or not
   const [selectedUser, setSelectedUser] = useState(null); //state for maintaining which user is selected for editing
-  const [editedUserData, setEditedUserData] = useState({
+  const [editedUserData, setEditedUserData] = useState({//state for maintaining data in edit section
     name: "",
     title: "",
     status: "",
     age: "",
     role: "",
+    image:""
   });
+  const [editedName, setEditedName] = useState("");// state for maintaining the name property alone in edit section
 
   const statusOptions = ["ACTIVE", "INACTIVE", "OFFLINE"];
   const roleOptions = ["Admin", "Owner", "Member"];
 
   const columns = [
+    {
+      name:'id',
+      label:'Id'
+    },
     {
       name: "name",
       label: "Name",
@@ -29,7 +36,8 @@ const App = () => {
         customBodyRender: (value, tableMeta, updateValue) => {
           const rowData = users[tableMeta.rowIndex];
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center" ,position:"relative"}}>
+              <div style={{position:'relative'}}>
               <img
                 src={rowData.image}
                 alt="Profile"
@@ -37,9 +45,20 @@ const App = () => {
                   width: 50,
                   height: 50,
                   marginRight: 10,
-                  borderRadius: "50%",
+                  borderRadius: "50%"
                 }}
               />
+                <AddCircleIcon
+                style={{
+                  position: "absolute",
+                  top: -5,
+                  right: -5,
+                  color: "black",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleImageClick(rowData.id)}
+              />
+              </div>
               <div>
                 <div>
                   {rowData.firstName} {rowData.lastName}
@@ -162,9 +181,9 @@ const App = () => {
   }, []);
   const handleEditClick = (rowIndex) => {
     const userData = users[rowIndex];
-    const { id, ...userDataWithoutId } = userData; //destructures and gets the id property and assigns the remaining property to userDataWithoutId
     setSelectedUser(userData);
-    setEditedUserData({ ...userData });
+    setEditedUserData({ ...userData});
+    setEditedName(`${userData.firstName} ${userData.lastName}`)
     setEditModalOpen(true);
   };
   const handleModalClose = () => {
@@ -172,14 +191,15 @@ const App = () => {
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const nameParts = name.split('.');
+
+    const nameParts = name.split('.');//for nested properties example company.title
     if (nameParts.length > 1) {
       const fieldName = nameParts[0];
       const nestedFieldName = nameParts[1]; 
       setEditedUserData({
         ...editedUserData,
         [fieldName]: {
-          ...editedUserData[fieldName],
+          ...editedUserData[fieldName],//for fieldname property in editeduserData keep the Outer object as it is and change the inner nested object's property alone
           [nestedFieldName]: value 
         }
       });
@@ -190,9 +210,32 @@ const App = () => {
       });
     }
   };
+  const handleImageClick = (userId) => {
+    const input = document.createElement("input");
+    input.type = "file";//sets the input type as file
+    input.accept = "image/*";//accepts images only
+    input.addEventListener("change", (event) => {//change event is triggered ,when user selects a file in input field
+      const file = event.target.files[0];//retrives first file selected by the user
+      const reader = new FileReader();
+      reader.onload = () => {//will execute when the selected image is completely loaded
+        const updatedUsers = users.map((user) => {
+          if (user.id === userId) {
+            return { ...user, image: reader.result }; // Update the user's image with the selected file
+          }
+          return user;
+        });
+        setUsers(updatedUsers);
+      };
+      reader.readAsDataURL(file);
+    });
+    input.click();
+  };
   const handleSaveChanges = () => {
     const updatedUsers = users.map((user) => {
       if (user.id === editedUserData.id) {
+        const nameParts = editedName.split(" ");
+        const firstName = nameParts[0];
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";//joins the whole name
         let statusStyle = {};
         let isBold = ["ACTIVE", "INACTIVE", "OFFLINE"].includes(
           editedUserData.status
@@ -229,9 +272,14 @@ const App = () => {
           default:
             break;
         }
+        const updatedEditedUserData = {
+          ...editedUserData,
+          firstName,
+          lastName,
+        };
         return {
           ...user,
-          ...editedUserData,
+          ...updatedEditedUserData,
           statusStyle, // Add statusStyle to user object
         };
       } else {
@@ -304,6 +352,16 @@ const App = () => {
 
           <h2>Edit User</h2>
           <form>
+          <Box mb={2}>
+              <TextField
+                name="name"
+                label="Name"
+                value={editedName}
+                onChange={(e)=>setEditedName(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+            </Box>
             <Box mb={2}>
               <TextField
                 name="email"
