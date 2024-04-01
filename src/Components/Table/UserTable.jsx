@@ -38,6 +38,7 @@ const App = () => {
   const [editedName, setEditedName] = useState(""); // state for maintaining the name property alone in edit section
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for controlling the delete confirmation dialog
   const [deleteRowIndex, setDeleteRowIndex] = useState(null); // State for storing the index of the row to be deleted
+  const [editSuccessModalOpen, setEditSuccessModalOpen] = useState(false); //successedit modal open
   const statusOptions = ["ACTIVE", "INACTIVE", "OFFLINE"];
   const roleOptions = ["Admin", "Owner", "Member"];
 
@@ -359,6 +360,13 @@ const App = () => {
     setUsers(updatedUsers);
     setEditModalOpen(false);
     setSelectedUser(null);
+    setEditSuccessModalOpen(true);
+    setTimeout(() => {
+      setEditSuccessModalOpen(false);
+    }, 1200);
+  };
+  const handleEditSuccessModalClose = () => {
+    setEditSuccessModalOpen(false);
   };
 
   const options = {
@@ -531,6 +539,34 @@ const App = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Modal
+        open={editSuccessModalOpen}
+        onClose={handleEditSuccessModalClose}
+        disableBackdropClick
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "40%",
+            backgroundColor: "#fff",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <IconButton
+            style={{ position: "absolute", top: "10px", right: "10px" }}
+            onClick={handleEditSuccessModalClose}
+          >
+            <CloseIcon />
+          </IconButton>
+          <h2>User Edited Successfully</h2>
+          <p>The user has been edited successfully and updated in the table.</p>
+        </div>
+      </Modal>
     </div>
   );
 };
