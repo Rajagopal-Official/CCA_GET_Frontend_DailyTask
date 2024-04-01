@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Modal, TextField } from "@mui/material";
+import {
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "@mui/material";
@@ -228,6 +235,7 @@ const App = () => {
   };
   const handleModalClose = () => {
     setEditModalOpen(false);
+    setSelectedUser(null);
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -446,14 +454,25 @@ const App = () => {
               />
             </Box>
             <Box mb={2}>
-              <TextField
+              <InputLabel id="status-placeholder">Status</InputLabel>
+              <Select
                 name="status"
                 label="Status"
+                labelId="status-placeholder"
                 value={editedUserData.status}
                 onChange={handleInputChange}
                 fullWidth
                 margin="normal"
-              />
+              >
+                <MenuItem value="" disabled>
+                  Select Status
+                </MenuItem>
+                {statusOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
             <Box mb={2}>
               <TextField
@@ -466,14 +485,25 @@ const App = () => {
               />
             </Box>
             <Box mb={2}>
-              <TextField
+              <InputLabel id="role-placeholder">Role</InputLabel>
+              <Select
                 name="role"
                 label="Role"
+                labelId="role-placeholder"
                 value={editedUserData.role}
                 onChange={handleInputChange}
                 fullWidth
                 margin="normal"
-              />
+              >
+                <MenuItem value="" disabled>
+                  Select Role
+                </MenuItem>
+                {roleOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
             <Button
               variant="contained"
