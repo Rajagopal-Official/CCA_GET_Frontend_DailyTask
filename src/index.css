@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0; /* Optional - adjust as needed */
+}
+ 
+/* Ensure the input text doesn't overlap with the hidden buttons */
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+}
