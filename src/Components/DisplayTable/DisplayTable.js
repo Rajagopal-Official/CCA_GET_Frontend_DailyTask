@@ -468,19 +468,33 @@ const App = () => {
             head: {
               padding: "10px 4px",
               fontWeight: "bold",
-              textAlign:'center'
+              textAlign:'center',
+              verticalAlign:'middle',
             },
             body: {
               padding: "7px 20px",
               color: "#e2e8f0",
-              fontWeight:'bold'
+              fontWeight:'bold',
+              verticalAlign:"middle",
             },
           },
         },
         MuiTableHead: {
           styleOverrides: {
             root: {
-              textAlign: "center",
+              display:'table-row-group'
+            },
+          },
+        },
+        MuiTableRow: {
+          styleOverrides: {
+            root: {
+              "&:nth-of-type(odd)": {
+                backgroundColor: "#1e293b", 
+              },
+              "&:nth-of-type(even)": {
+                backgroundColor: "#334155", 
+              },
             },
           },
         },
