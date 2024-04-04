@@ -1,8 +1,8 @@
 import MUIDataTable from "mui-datatables";
 import React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
 const App = () => {
+  const consolidatedDetails = []; //New Array to Populate the Modified  table data
   const details = [
     {
       region: "ap-south-1",
@@ -346,6 +346,31 @@ const App = () => {
       last_activity_time: "2024-02-01 20:18:09.447632",
     },
   ];
+  const instanceIds = new Set(); //Set to keep track of unique instance_id
+  details.forEach((instance) => {
+    const { instance_id, metric_type, average_utilization, ...rest } = instance;
+    if (!instanceIds.has(instance_id)) {
+      instanceIds.add(instance_id); //Add instance id to set if it is not already present
+      consolidatedDetails.push({
+        instance_id,
+        cpu_utilization: null,
+        memory_utilization: null,
+        disk_utilization: null,
+        ...rest,
+      });
+    }
+
+    const existingInstance = consolidatedDetails.find(
+      (item) => item.instance_id === instance_id
+    );
+    if (metric_type === "cpu") {
+      existingInstance.cpu_utilization = average_utilization;
+    } else if (metric_type === "memory") {
+      existingInstance.memory_utilization = average_utilization;
+    } else if (metric_type === "disk") {
+      existingInstance.disk_utilization = average_utilization;
+    }
+  });
 
   const columns = [
     { name: "region", label: "Region" },
@@ -373,7 +398,7 @@ const App = () => {
                 borderRadius: "20px",
                 textAlign: "center",
                 lineHeight: "30px",
-                margin: '0',
+                margin: "0",
                 padding: "5px 10px",
               }}
               className="inline-block"
@@ -385,50 +410,8 @@ const App = () => {
       },
     },
     {
-      name: "metric_type",
-      label: "Metric Type",
-      options: {
-        customBodyRender: (value) => {
-          const capitalizedValue =
-            value.charAt(0).toUpperCase() + value.slice(1);
-          let backgroundColor;
-          switch (value) {
-            case "cpu":
-              backgroundColor = "#2196F3";
-              break;
-            case "memory":
-              backgroundColor = "#FF9800";
-              break;
-            case "disk":
-              backgroundColor = "#E91E63";
-              break;
-            default:
-              backgroundColor = "#CCCCCC";
-              break;
-          }
-
-          return (
-            <p
-              style={{
-                backgroundColor,
-                borderRadius: "20px",
-                textAlign: "center",
-                lineHeight: "30px",
-                margin: 0,
-                padding: "5px 10px",
-                color: "#FFFFFF",
-              }}
-              className="inline-block "
-            >
-              {capitalizedValue}
-            </p>
-          );
-        },
-      },
-    },
-    {
-      name: "average_utilization",
-      label: "Average Utilization",
+      name: "cpu_utilization",
+      label: "CPU Utilization",
       options: {
         customBodyRender: (value) => (
           <p
@@ -437,21 +420,59 @@ const App = () => {
               margin: 0,
             }}
           >
-            {`${value}%`}
+            {value !== null && value !== undefined ? `${value}%` : "N/A"}
           </p>
         ),
       },
     },
-
+    {
+      name: "memory_utilization",
+      label: "Memory Utilization",
+      options: {
+        customBodyRender: (value) => (
+          <p
+            style={{
+              textAlign: "center",
+              margin: 0,
+            }}
+          >
+            {value !== null && value !== undefined ? `${value}%` : "N/A"}
+          </p>
+        ),
+      },
+    },
+    {
+      name: "disk_utilization",
+      label: "Disk Utilization",
+      options: {
+        customBodyRender: (value) => (
+          <p
+            style={{
+              textAlign: "center",
+              margin: 0,
+            }}
+          >
+            {value !== null && value !== undefined ? `${value}%` : "N/A"}
+          </p>
+        ),
+      },
+    },
     { name: "last_activity_time", label: "Last Activity Time" },
   ];
 
   const options = {
     selectableRows: false,
-    responsive: "standard",
+    responsive: "scroll",
     elevation: 0,
     rowsPerPage: 10,
     rowsPerPageOptions: [5, 10, 20, 30],
+    search: false,
+    download: false,
+    print: false,
+    pagination: false,
+    sort: false,
+    viewColumns: false,
+    filter: false,
   };
   const getMuiTheme = () =>
     createTheme({
@@ -466,23 +487,24 @@ const App = () => {
         MuiTableCell: {
           styleOverrides: {
             head: {
-              padding: "10px 4px",
+              padding: "10x 4px ",
               fontWeight: "bold",
-              textAlign:'center',
-              verticalAlign:'middle',
+              textAlign: "center",
+              verticalAlign: "middle",
+              backgroundColor: "#1e293b",
             },
             body: {
               padding: "7px 20px",
               color: "#e2e8f0",
-              fontWeight:'bold',
-              verticalAlign:"middle",
+              fontWeight: "bold",
+              verticalAlign: "middle",
             },
           },
         },
         MuiTableHead: {
           styleOverrides: {
             root: {
-              display:'table-row-group'
+              display: "table-row-group",
             },
           },
         },
@@ -490,27 +512,27 @@ const App = () => {
           styleOverrides: {
             root: {
               "&:nth-of-type(odd)": {
-                backgroundColor: "#1e293b", 
+                backgroundColor: "#1e293b",
               },
               "&:nth-of-type(even)": {
-                backgroundColor: "#334155", 
+                backgroundColor: "#334155",
               },
             },
           },
         },
       },
     });
-
   return (
     <div className="bg=slate-700 py-10 min-h-screen grid place-items-center">
       <div className="w-10/12 max-w-4xl">
         <ThemeProvider theme={getMuiTheme()}>
-          <MUIDataTable
-            title="Instance Details"
-            data={details}
-            columns={columns}
-            options={options}
-          />
+          <div style={{ width: "95%", margin: "auto" }}>
+            <MUIDataTable
+              data={consolidatedDetails}
+              columns={columns}
+              options={options}
+            />
+          </div>
         </ThemeProvider>
       </div>
     </div>
