@@ -6,6 +6,7 @@ import UserTable from "./Components/Table/UserTable";
 import Echarts from "./Components/Charts/Echarts";
 import FormValidation from "./Components/FormValidation/FormValidation";
 import DisplayTable from "./Components/DisplayTable/DisplayTable";
+import Cards from "./Components/Cards/Cards";
 
 function App() {
   const [openModal, setOpenModal] = useState(false);
@@ -79,6 +80,13 @@ function App() {
       >
         DisplayTable
       </Button>
+      <Button
+        sx={{ marginX: "10px" }}
+        variant="contained"
+        onClick={() => handleButtonClick("Cards")}
+      >
+        MUI Cards
+      </Button>
 
       <Modal
         open={openModal}
@@ -109,6 +117,7 @@ function App() {
           {selectedComponent === "DisplayTable" && showDisplayTable && (
             <DisplayTable />
           )}
+          {selectedComponent === "Cards" && <Cards />}
         </Box>
       </Modal>
     </div>
