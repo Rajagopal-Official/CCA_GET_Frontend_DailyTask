@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Card, CardContent, Typography, Chip, Button } from "@mui/material";
+import React from "react";
+import { Card, CardContent, Typography, Chip } from "@mui/material";
 
 const InstanceCard = ({ instance }) => {
+  //Receives a prop nameed instance
   const capitalizeEachWord = (str) => {
     if (!str) return "N/A";
     return str
@@ -11,93 +12,96 @@ const InstanceCard = ({ instance }) => {
   };
   return (
     <Card
-  sx={{
-    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-    borderRadius: "8px",
-    backgroundColor: "#E5DDC5",
-    width: "500px",
-    height: "200px",
-    margin: "auto",
-    marginBottom: "20px 0",
-  }}
->
-  <CardContent
-    sx={{
-      padding: "16px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center", 
-      justifyContent: "center", 
-    }}
-  >
-    <Typography variant="h5" gutterBottom style={{ textAlign: "center" ,fontWeight:'bold'}}>
-    Instance Name: {capitalizeEachWord(instance.instance_name)}
-    </Typography>
-    <div style={{ display: "flex", marginBottom: "8px" }}>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        style={{ marginRight: "16px", fontWeight: "bold" }}
-      >
-        CPU Utilization:
-      </Typography>
-      <Typography variant="body1" fontWeight="bold">
-        {instance.cpu_utilization !== null ? `${instance.cpu_utilization}%` : "N/A"}
-      </Typography>
-    </div>
-    <div style={{ display: "flex", marginBottom: "8px" }}>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        style={{ marginRight: "16px", fontWeight: "bold" }}
-      >
-        Memory Utilization:
-      </Typography>
-      <Typography variant="body1" fontWeight="bold">
-        {instance.memory_utilization !== null ? `${instance.memory_utilization}%` : "N/A"}
-      </Typography>
-    </div>
-    <div style={{ display: "flex" }}>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        style={{ marginRight: "16px", fontWeight: "bold" }}
-      >
-        Disk Utilization:
-      </Typography>
-      <Typography variant="body1" fontWeight="bold">
-        {instance.disk_utilization !== null ? `${instance.disk_utilization}%` : "N/A"}
-      </Typography>
-    </div>
-    <Chip
-      label={instance.state ? instance.state.charAt(0).toUpperCase() + instance.state.slice(1) : "N/A"}
-      color={instance.state === "running" ? "success" : "error"}
-      variant="outlined"
       sx={{
-        backgroundColor: instance.state === "running" ? "#00C853" : "red",
-        color: "#fff",
-        borderRadius: "20px",
-        padding: "20px 30px",
-        alignSelf: "center",
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+        borderRadius: "8px",
+        backgroundColor: "#E5DDC5",
+        width: { xs: "100%", sm: "250px" }, //for xtra small screen width is set to 100%,for screen larger than or equal to sm (250px)[Tablets]
+        height: "200px",
+        margin: "16px",
       }}
-    />
-  </CardContent>
-</Card>
+    >
+      <CardContent
+        sx={{
+          padding: "16px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="h6"
+          gutterBottom
+          style={{ textAlign: "center", fontWeight: "bold" }}
+        >
+          {capitalizeEachWord(instance.instance_name)}
+        </Typography>
+        <div style={{ display: "flex", marginBottom: "8px" }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            style={{ marginRight: "16px", fontWeight: "bold" }}
+          >
+            CPU Utilization:
+          </Typography>
+          <Typography variant="body1" fontWeight="bold">
+            {instance.cpu_utilization !== null
+              ? `${instance.cpu_utilization}%`
+              : "N/A"}
+          </Typography>
+        </div>
+        <div style={{ display: "flex", marginBottom: "8px" }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            style={{ marginRight: "16px", fontWeight: "bold" }}
+          >
+            Memory Utilization:
+          </Typography>
+          <Typography variant="body1" fontWeight="bold">
+            {instance.memory_utilization !== null
+              ? `${instance.memory_utilization}%`
+              : "N/A"}
+          </Typography>
+        </div>
+        <div style={{ display: "flex" }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            style={{ marginRight: "16px", fontWeight: "bold" }}
+          >
+            Disk Utilization:
+          </Typography>
+          <Typography variant="body1" fontWeight="bold">
+            {instance.disk_utilization !== null
+              ? `${instance.disk_utilization}%`
+              : "N/A"}
+          </Typography>
+        </div>
+        <Chip
+          label={
+            instance.state
+              ? instance.state.charAt(0).toUpperCase() + instance.state.slice(1)
+              : "N/A"
+          }
+          color={instance.state === "running" ? "success" : "error"}
+          variant="outlined"
+          sx={{
+            backgroundColor: instance.state === "running" ? "#00C853" : "red",
+            color: "#fff",
+            borderRadius: "20px",
+            padding: "5px 10px",
+            alignSelf: "center",
+            marginTop: "8px",
+          }}
+        />
+      </CardContent>
+    </Card>
   );
 };
 
 const InstanceGrid = ({ instances }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 1;
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
   const consolidatedDetails = [];
   const instanceIds = new Set();
 
@@ -127,45 +131,18 @@ const InstanceGrid = ({ instances }) => {
     }
   });
 
-  const currentPageInstances = consolidatedDetails.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage //Will display 1 card record in 1 page
-  );
-
   return (
-    <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ margin: "auto" }}>
-        {currentPageInstances.map((instance, index) => (
-          <InstanceCard key={index} instance={instance} />
-        ))}
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "20px",
-        }}
-      >
-        <Button
-          variant="contained"
-          disabled={currentPage === 0}
-          onClick={handlePrevPage}
-          sx={{ marginRight: "8px" }}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="contained"
-          disabled={
-            currentPage ===
-            Math.floor(consolidatedDetails.length / itemsPerPage) - 1
-            //TotalInstance /Itemsper page-1(Eg:20 instance /1=20-1 which is the last index)
-          }
-          onClick={handleNextPage}
-        >
-          Next
-        </Button>
-      </div>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap", //Wrap in the next line if they dont fit
+        justifyContent: "center",
+        marginTop: "20px",
+      }}
+    >
+      {consolidatedDetails.map((instance, index) => (
+        <InstanceCard key={index} instance={instance} />
+      ))}
     </div>
   );
 };
