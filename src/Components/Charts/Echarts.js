@@ -1,181 +1,137 @@
-import React,{Component} from 'react';//Component is used for creating class based react component
-import EChartsReact from 'echarts-for-react';
-import { populationDataMale } from './DataMale';
-import { populationDataFemale } from './DataFemale';
-class App extends Component {
-  getOption = () => {
-    let districts = [];
-    let years = [];
+import React, { useEffect, useState, useRef } from "react";
+import * as echarts from "echarts";
 
-    Object.entries(populationDataFemale).forEach(entry => {
-      years = [...years, entry[0]];
-      entry[1].forEach(e => {
-        districts = [...new Set([...districts, e.name])];
-      });
-    });
+function drawChart(data, chartContainerRef) {
+  //chartContainerRef is the reference to the DOM element where a DOM element has to be mounted
+  const myChart = echarts.init(chartContainerRef.current); //Initialized e charts  passing chartContainerRef.current as reference
 
-    let options = years.map(year => {
-      let obj = {};
-
-      obj["series"] = [
-        {
-          stack: "group",// different series to be stacked on top of each other within the same category,
-          data: populationDataFemale[year]
-        },
-        {
-          stack: "group",
-          data: populationDataMale[year]
-        }
-      ];
-
-      obj["title"] = {
-        text: `Population of Singapore by District, ${year}`
-      };
-
-      return obj;
-    });
-
-    return {
-      baseOption: {
-        timeline: {//The timeline is a control feature in ECharts that allows users to play through different time points.
-          autoPlay: true,//automatically play the timeline animation
-          axisType: "category",//categorical data is displayed
-          bottom: 20,
-          data: years,
-          height: null,
-          inverse: true,
-          left: null,
-          orient: "vertical",
-          playInterval: 1000,
-          right: 0,
-          top: 20,
-          width: 55,
-          label: {
-            normal: {
-              textStyle: {
-                color: "#aaa"
-              }
-            },
-            emphasis: {//hovered over or highlighted
-              textStyle: {
-                color: "#333"
-              }
-            }
-          },
-          symbol: "none",
-          lineStyle: {
-            color: "#aaa"
-          },
-          checkpointStyle: {
-            color: "#354EF6",
-            borderColor: "transparent",
-            borderWidth: 2
-          },
-          controlStyle: {
-            showNextBtn: false,
-            showPrevBtn: false,
-            normal: {
-              color: "#354EF6",
-              borderColor: "#354EF6"
-            },
-            emphasis: {
-              color: "#5d71f7",
-              borderColor: "#5d71f7"
-            }
-          }
-        },
-        color: ["#e91e63", "#354EF6"],
-        title: {
-          subtext: "Data from the Singapore Department of Statistics",
-          textAlign: "left",
-          left: "5%"
-        },
-        tooltip: { backgroundColor: "#555", borderWidth: 0, padding: 10 },
-        legend: {
-          data: ["Female", "Male"],
-          itemGap: 35,
-          itemHeight: 18,
-          right: "11%",
-          top: 20
-        },
-        calculable: true,
-        grid: {
-          top: 100,
-          bottom: 150,
-          tooltip: {
-            trigger: "axis",
-            axisPointer: {
-              type: "shadow",
-              label: {
-                show: true,
-                formatter: function(params) {
-                  return params.value.replace("\n", "");
-                }
-              }
-            }
-          }
-        },
-        xAxis: [
-          {
-            axisLabel: {
-              interval: 0,
-              rotate: 55,
-              textStyle: {
-                baseline: "top",
-                color: "#333",
-                fontSize: 10,
-                fontWeight: "bold"
-              }
-            },
-            axisLine: { lineStyle: { color: "#aaa" }, show: true },
-            axisTick: { show: false },
-            data: districts,
-            splitLine: { show: false },
-            type: "category"
-          }
-        ],
-        yAxis: [
-          {
-            axisLabel: {
-              textStyle: { fontSize: 10 }
-            },
-            axisLine: { show: false },
-            axisTick: { show: false },
-            name: "Population",
-            splitLine: {
-              lineStyle: {
-                type: "dotted"
-              }
-            },
-            type: "value"
-          }
-        ],
-        series: [{ name: "Female", type: "bar" }, { name: "Male", type: "bar" }]
+  const option = {
+    responsive: true, // chart will resize and reposition its elements for different kind of devices
+    maintainAspectRatio: false, //allow to adjust its size based on the container resize.MAINTAINS SAME WIDTH TO HEIGHT RATIO WHEN RESIZED,if it is false means it can resize freely in the container
+    title: {
+      text: "Service Costs",
+      left: "center", //In echarts it is used to horizontally align a component
+      top: "20px",
+      textStyle: {
+        //for title Styling
+        fontSize: 30,
+        fontWeight: "bold",
+        color: "#58A399",
       },
-      options: options
-    };
+    },
+    grid: {
+      left: "15%",
+    },
+    xAxis: {
+      type: "category",
+      data: data.map((item) => item.service),
+      axisLabel: {
+        //for xaxis styling
+        rotate: 45,
+        fontSize: 12,
+        fontWeight: "bold",
+        color: "black",
+      },
+    },
+    yAxis: {
+      type: "value",
+      axisLabel: {
+        fontSize: 12,
+        fontWeight: "bold",
+        color: "black",
+      },
+    },
+    tooltip: {
+      trigger: "item", //Trigger for item in this case bars
+      formatter: (params) => {
+        //params contain information about the bar when hovered over
+        const { name, value } = params;
+        return `${name}: $${value}`;
+      },
+    },
+    series: [
+      {
+        data: data.map((item) => item.cost),
+        type: "bar",
+        label: {
+          show: true,
+          position: "top", //vertical alignment of the label Cost(USD)
+          fontSize: 12,
+          fontWeight: "bold",
+        },
+        itemStyle: {
+          //Applying styles for individual data items
+          color: {
+            type: "linear", //linear gradient
+            x: 0,
+            y: 0,
+            x2: 1,
+            y2: 0, //gradient starts from top left corner and ends in top right corner
+            colorStops: [
+              {
+                offset: 0,
+                color: "#47F3D0", // color at 0% position
+              },
+              {
+                offset: 0.52,
+                color: "#278EF1", // color at 52% position
+              },
+              {
+                offset: 1,
+                color: "#CB5EDC", // color at 100% position
+              },
+            ],
+            global: false,
+          },
+          borderColor: "black",
+          borderWidth: 0.5,
+        },
+      },
+    ],
   };
-  render(){
-    return(
-      <EChartsReact
-      // option={{
-      //   xAxis:{
-      //     type:"category",
-      //     data:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-      //   },
-      //   yAxis:{
-      //     type:"value"
-      //   },
-      //   series: [{ 
-      //     data: [820, 932, 901, 934, 1290, 1330, 1320],
-      //     type: "line"
-      //   }]
-      // }}
-      option={this.getOption()}
-      style={{height:"80vh",left:50,top:50,width:"90vw"}}
-      opts={{renderer:"svg"}}
-      />
-    )
-  }
+  myChart.setOption(option);
+  window.addEventListener("resize", () => {
+    myChart.resize();
+  });
 }
+
+function App() {
+  const [loading, setLoading] = useState(false);
+  const chartContainerRef = useRef(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("https://mocki.io/v1/6f82167d-b7cb-42ad-924e-f74ea8c9ac4b")
+      .then((response) => response.json())
+      .then((data) => {
+        drawChart(data.data, chartContainerRef);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div
+          ref={chartContainerRef}
+          style={{ width: "100%", height: "80%" }}
+        ></div>
+      )}
+    </div>
+  );
+}
+
 export default App;
