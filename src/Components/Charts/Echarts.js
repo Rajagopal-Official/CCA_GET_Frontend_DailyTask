@@ -19,7 +19,7 @@ function drawChart(data, chartContainerRef) {
         color: "#58A399",
       },
     },
-    grid: {
+    grid: {//grid is used for customizing position of charts
       left: "15%",
     },
     xAxis: {
