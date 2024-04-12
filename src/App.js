@@ -7,6 +7,7 @@ import Echarts from "./Components/Charts/Echarts";
 import FormValidation from "./Components/FormValidation/FormValidation";
 import DisplayTable from "./Components/DisplayTable/DisplayTable";
 import Cards from "./Components/Cards/Cards";
+import ProductCarousel from "./Components/Carousel/ProductCarousel";
 
 function App() {
   const [openModal, setOpenModal] = useState(false);
@@ -67,6 +68,9 @@ function App() {
         <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("Cards")}>
           MUI Cards
         </Button>
+        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("ProductCarousel")}>
+          Carousel 
+        </Button>
       </div>
 
       <Modal
@@ -87,6 +91,7 @@ function App() {
           {selectedComponent === "FormValidation" && <FormValidation />}
           {selectedComponent === "DisplayTable" && showDisplayTable && <DisplayTable />}
           {selectedComponent === "Cards" && <Cards />}
+          {selectedComponent==="ProductCarousel" &&<ProductCarousel />}
         </Box>
       </Modal>
     </div>
