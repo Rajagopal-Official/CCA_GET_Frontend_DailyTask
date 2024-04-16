@@ -8,7 +8,7 @@ import FormValidation from "./Components/FormValidation/FormValidation";
 import DisplayTable from "./Components/DisplayTable/DisplayTable";
 import Cards from "./Components/Cards/Cards";
 import ProductCarousel from "./Components/Carousel/ProductCarousel";
-
+import Card from "./Components/Popover/Card";
 function App() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -47,40 +47,82 @@ function App() {
   return (
     <div>
       <div style={{ marginBottom: "15px" }}>
-        <Button sx={{ marginX: "10px"  }} variant="contained" onClick={() => handleButtonClick("NestedMenu")}>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("NestedMenu")}
+        >
           Open Nested Menu
         </Button>
-        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("UserTable")}>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("UserTable")}
+        >
           Open User Table with Edit and Delete Functionality
         </Button>
-        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("Echarts")}>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("Echarts")}
+        >
           Open a Sample Echart
         </Button>
       </div>
-
       <div>
-        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("FormValidation")}>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("FormValidation")}
+        >
           FormValidation
         </Button>
-        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("DisplayTable")}>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("DisplayTable")}
+        >
           DisplayTable
         </Button>
-        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("Cards")}>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("Cards")}
+        >
           MUI Cards
         </Button>
-        <Button sx={{ marginX: "10px" }} variant="contained" onClick={() => handleButtonClick("ProductCarousel")}>
-          Carousel 
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("ProductCarousel")}
+        >
+          Carousel
+        </Button>
+        <Button
+          sx={{ marginX: "10px" }}
+          variant="contained"
+          onClick={() => handleButtonClick("Card")}
+        >
+          Popover
         </Button>
       </div>
-
       <Modal
         open={openModal}
         onClose={handleCloseModal}
-        style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
         <Box sx={modalStyle}>
           <IconButton
-            style={{ position: "absolute", top: "10px", right: "10px", zIndex: 1 }}
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              zIndex: 1,
+            }}
             onClick={handleCloseModal}
           >
             <CloseIcon />
@@ -89,9 +131,12 @@ function App() {
           {selectedComponent === "UserTable" && <UserTable />}
           {selectedComponent === "Echarts" && <Echarts />}
           {selectedComponent === "FormValidation" && <FormValidation />}
-          {selectedComponent === "DisplayTable" && showDisplayTable && <DisplayTable />}
+          {selectedComponent === "DisplayTable" && showDisplayTable && (
+            <DisplayTable />
+          )}
           {selectedComponent === "Cards" && <Cards />}
-          {selectedComponent==="ProductCarousel" &&<ProductCarousel />}
+          {selectedComponent === "ProductCarousel" && <ProductCarousel />}
+          {selectedComponent==="Card"&&<Card />}
         </Box>
       </Modal>
     </div>
